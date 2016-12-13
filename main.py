@@ -15,11 +15,212 @@
 # limitations under the License.
 #
 import webapp2
+import jinja2
+import os
+import hashlib
+import hmac
+import random
+import string
+from valid_credentials import valid_username, valid_password, valid_email
+from google.appengine.ext import db
 
-class MainHandler(webapp2.RequestHandler):
+SECRET = 'du.uyX9fE~Tb6.pp&U3D-OsmYO,Gqi$^S34tzu9'
+
+template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
+								autoescape = True)
+
+def make_pw_secure_val(name,pw,salt = None):
+	if not salt:
+		salt = make_salt(5)
+	hash_val = hashlib.sha256(name + pw + salt).hexdigest()
+	return "%s|%s" % (salt,hash_val)
+
+# returns boolean values
+def check_pw_secure_val(name,pw,pw_secure_val):
+	salt = pw_secure_val.split('|')[0]
+	return pw_secure_val == make_pw_secure_val(name,pw,salt)
+
+def make_salt(length):
+	salt = ''.join(random.choice(string.letters) for x in xrange(length))
+	return salt
+
+def hash_str(val):
+	return hmac.new(SECRET, val).hexdigest()
+
+def make_secure_val(val):
+	return "%s|%s" % (val,hash_str(val))
+
+# returns the un-encrypted value
+def check_secure_val(secure_val):
+	val = secure_val.split('|')[0]
+	if secure_val == make_secure_val(val):
+		return val
+
+class User(db.Model):
+	name = db.StringProperty(required = True)
+	pw_secure_val = db.StringProperty(required = True)
+	email = db.StringProperty()
+
+	@classmethod
+	def by_id(cls,uid):
+		return cls.get_by_id(uid)
+
+	@classmethod
+	def by_name(cls,name):
+		return cls.all().filter('name = ',name).get()
+
+	@classmethod
+	def register(cls,name, pw, email):
+		pw_secure_val = make_pw_secure_val(name,pw)
+		return User(name = name,
+					pw_secure_val = pw_secure_val,
+					email = email)
+
+	@classmethod
+	def login(cls,name,pw):
+		u = cls.by_name(name)
+		if u and check_pw_secure_val(name,pw,u.pw_secure_val):
+			return u
+
+def render_str(template, **params):
+	t = jinja_env.get_template(template)
+	return t.render(params)
+
+class BaseHandler(webapp2.RequestHandler):
+	def write(self, *args, **kwargs):
+		self.response.out.write(*args, **kwargs)
+
+	def render(self, template, **kwargs):
+		self.write(render_str(template, **kwargs))
+
+	def set_secure_cookie(self,name,val):
+		cookie_val = make_secure_val(val)
+		self.response.headers.add_header('Set-Cookie','%s=%s ; Path=/' % (name,cookie_val))
+
+	# returns the un-encrypted value
+	def read_secure_cookie(self,name):
+		cookie_val = self.request.cookies.get(name)
+		return cookie_val and check_secure_val(cookie_val)
+
+	# sets the user_id cookie to point to a user
+	def login(self,user):
+		self.set_secure_cookie('user_id', str(user.key().id()))
+
+	def logout(self):
+		self.set_secure_cookie('user_id','')
+
+	# runs before each request and stores the current logged in
+	# user in self.user which is inherited to other functions
+	def initialize(self, *args, **kwargs):
+		webapp2.RequestHandler.initialize(self, *args, **kwargs)
+		uid = self.read_secure_cookie('user_id')
+		self.user = uid and User.by_id(int(uid))
+
+class MainHandler(BaseHandler):
     def get(self):
-        self.response.write('Hello world!')
+        self.render('index.html')
+
+class Signup(BaseHandler):
+	def get(self):
+		self.render('signup-form.html')
+
+	def post(self):
+		has_error = False
+
+		self.username = self.request.get('username')
+		self.password = self.request.get('password')
+		self.verify = self.request.get('verify')
+		self.password = self.request.get('password')
+		self.email = self.request.get('email')
+
+		msg = 'Enter a valid %s'
+
+		params = dict(username = self.username,
+						email = self.email)
+
+		if not valid_username(self.username):
+			has_error = True
+			params['error_username'] = msg % 'username'
+
+		if valid_password(self.password):
+			if self.password.lower() == 'password':
+				has_error = True
+				params['error_password'] = "Password can't be equal to 'password'"
+
+			elif self.password.lower() == self.username.lower():
+				has_error = True
+				params['error_password'] = "password can't be equal to username"
+		
+			elif not self.verify == self.password:
+				has_error = True
+				params['error_verify'] = "passwords don't match"
+
+		else:
+			has_error = True
+			params['error_password'] = msg % 'password'
+
+		if self.email and (not valid_email(self.email)):
+			has_error = True
+			params['error_email'] = msg % 'email'
+
+		if has_error:
+			self.render('signup-form.html', **params)
+
+		else:
+			self.done()
+
+class RegisterHandler(Signup):
+	def done(self):
+		u = User.by_name(self.username)
+		if u:
+			msg = 'user already exists'
+			self.render('signup-form.html',error_username = msg)
+		else:
+			u = User.register(self.username,self.password,self.email)
+			u.put()
+			self.login(u)
+			self.redirect('/welcome')
+
+class LoginHandler(BaseHandler):
+	def get(self):
+		self.logout()
+		self.render('login-form.html')
+
+	def post(self):
+		username = self.request.get('username')
+		password = self.request.get('password')
+
+		u = User.login(username,password)
+
+		if u:
+			self.login(u)
+			self.redirect('/welcome')
+		else:
+			msg = 'invalid login'
+			self.render('login-form.html',error = msg)
+
+class LogoutHandler(BaseHandler):
+	def get(self):
+		if self.user:
+			self.logout()
+			self.render('logout.html')
+		else:
+			self.write('No user logged in')
+
+class WelcomeHandler(BaseHandler):
+	def get(self):
+		if self.user:
+			self.render('welcome.html',username = self.user.name)
+
+		else:
+			self.redirect('/login')
+
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler),
+    ('/login',LoginHandler),
+    ('/welcome',WelcomeHandler),
+    ('/logout',LogoutHandler),
+    ('/signup',RegisterHandler)
 ], debug=True)

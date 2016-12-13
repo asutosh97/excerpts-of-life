@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block tabname %}
+Excerpts of Life
+{% endblock %}
+
+{% block heading %}
+Excerpts of Life
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<table class="index-table">
+		<tr>
+			<td class="index-column">
+				<a href="/signup" class="index-links">
+					<div style="height:100%;width:100%">
+						Register
+						<br>
+						(New User)
+					</div>
+				</a>
+			</td>
+			<td style="width:100px">
+				
+			</td>
+			<td class="index-column">
+				<a href="/login" class="index-links">
+					<div style="height:100%;width:100%">
+						Login
+						<br>
+						(Existing User)
+					</div>
+				</a>
+			</td>
+		</tr>
+	</table>
+</div>
+{% endblock %}
