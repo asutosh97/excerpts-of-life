@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block tabname %}
+Registration
+{% endblock %}
+
+{% block heading %}
+Sign Up:
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<form method="post">
+	<table>
+		<tr>
+			<td class="label">
+			<div class="label">Username</div>				
+			</td>
+			<td>
+				<input type="text" name="username" value="{{username}}">
+			</td>
+			<td class="error">
+				{{error_username}}
+			</td>
+		</tr>
+
+		<tr>
+			<td class="label">
+				Password
+			</td>
+			<td>
+				<input type="password" name="password">
+			</td>
+			<td class="error">
+				{{error_password}}
+			</td>
+		</tr>
+
+		<tr>
+			<td class="label">
+				Verify Password
+			</td>
+			<td>
+				<input type="password" name="verify">
+			</td>
+			<td class="error">
+				{{error_verify}}
+			</td>
+		</tr>
+
+		<tr>
+			<td class="label">
+				E-mail(optional)
+			</td>
+			<td>
+				<input type="text" name="email" value="{{email}}">
+			</td>
+			<td class="error">
+				{{error_email}}
+			</td>
+		</tr>
+	</table>
+	<button>Submit</button>
+</form>
+{% endblock %}

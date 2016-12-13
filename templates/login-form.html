@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block tabname %}
+Login
+{% endblock %}
+
+{% block heading %}
+Login:
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<form method="post">
+	<table>
+		<tr>
+			<td class="label">
+			<div class="label">Username</div>				
+			</td>
+			<td>
+				<input type="text" name="username" value="{{username}}">
+			</td>
+		</tr>
+
+		<tr>
+			<td class="label">
+				Password
+			</td>
+			<td>
+				<input type="password" name="password">
+			</td>
+		</tr>
+	</table>
+	<div class="error">{{error}}</div>
+	<br>
+	<button>Submit</button>
+</form>
+{% endblock %}
