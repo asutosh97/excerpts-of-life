@@ -7,10 +7,10 @@
     padding: 10px;
     color: #333;
 }*/
-/*    *{
+    *{
         border-style: dashed;
         box-sizing: border-box;
-    }   */
+    }   
 
 @import url('https://fonts.googleapis.com/css?family=Gloria+Hallelujah');
 @import url('https://fonts.googleapis.com/css?family=Dancing+Script');
@@ -84,7 +84,7 @@ input[type=submit] {
 .main-title {
     display: block;
     color: #222;
-    font-size: 40px;
+    font-size: 30px;
     font-family: 'Gloria Hallelujah', cursive;
     font-weight: bold;
     text-align: center;
