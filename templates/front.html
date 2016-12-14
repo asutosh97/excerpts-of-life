@@ -1,6 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
+	<div class="row">
+		<div class="col-6">
+			<a href="/blog/newpost" style="text-decoration: none;">
+				<div style="margin-bottom: 5px;font-weight: bold;color: brown;">
+					New Post
+				</div>
+			</a>
+		</div>
+
+		<div class="col-6">
+			<a href="/logout" style="text-decoration: none;">
+				<div style="text-align: right;font-weight: bold;color: brown;">Logout</div>
+			</a>
+		</div>
+	</div>
 	{% for post in posts %}
 		{{post.render() | safe}}
 	{% endfor %}

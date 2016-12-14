@@ -2,15 +2,14 @@
 
 {% block content %}
 <form method="post">
-	<h2>feedback and suggestions</h2>
 	<label>
-		Feedback
+		Feedback and Suggestions
 		<br>
-		<textarea placeholder="Enter your feedback here" name="content">{{content}}</textarea>
+		<textarea placeholder="Enter your feedback and suggestions here" name="content">{{content}}</textarea>
 	</label>
 	<div class="error">
 		{{error}}
 	</div>
-	<button>Submit and Logout</button>
+	<button class="feedback-submit">Submit and Logout</button>
 </form>
 {% endblock %}

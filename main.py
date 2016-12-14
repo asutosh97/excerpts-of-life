@@ -68,6 +68,10 @@ class Post(db.Model):
 		self.username = User.by_id(int(self.user_id)).name
 		return render_str('post.html',post = self)
 
+	@classmethod
+	def by_id(cls,pid):
+		return cls.get_by_id(pid)
+
 
 class User(db.Model):
 	name = db.StringProperty(required = True)
@@ -243,6 +247,16 @@ class BlogHandler(BaseHandler):
 		else:
 			self.redirect('/')
 
+
+class PostByUser(db.Model):
+	user_id = db.StringProperty(required = True)
+	post_id = db.TextProperty(required = True)
+	created = db.DateTimeProperty(auto_now_add = True)
+
+	def render(self):
+		post = Post.by_id(int(self.post_id))
+		return post.render()
+
 class NewPost(BaseHandler):
 	def get(self):
 		if self.user:
@@ -259,11 +273,23 @@ class NewPost(BaseHandler):
 		if subject and content:
 			p = Post(subject = subject,content = content,user_id = user_id)
 			p.put()
-			self.redirect('/blog/%s' % str(p.key().id()))
+			post_id = str(p.key().id())
+			element = PostByUser(user_id = user_id,post_id = post_id)
+			element.put()
+			self.redirect('/blog/%s' % post_id)
 		else:
 			error = "Enter both subject and content!!!"
 			self.render('newpost.html',error = error)
 
+class UserPage(BaseHandler):
+	def get(self,user_id):
+		if self.user:
+			elements = db.GqlQuery("select * from PostByUser WHERE user_id='%s' order by created desc" % user_id)
+
+			self.render('postbyuser.html',elements = elements, username = User.by_id(int(user_id)).name)
+
+		else:
+			self.redirect('/')
 
 class Comment(db.Model):
 	user_id = db.StringProperty(required = True)
@@ -352,6 +378,7 @@ app = webapp2.WSGIApplication([
     ('/exit',LogoutHandler),
     ('/signup', RegisterHandler),
     ('/blog/newpost', NewPost),
-    ('/blog/([0-9]+)',PostPage),
+    ('/blog/([0-9]+)', PostPage),
+    ('/user/([0-9]+)', UserPage),
     ('/welcome',WelcomeHandler)
 ], debug=True)

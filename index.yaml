@@ -15,3 +15,15 @@ indexes:
   - name: post_id
   - name: created
     direction: desc
+
+- kind: Comment
+  properties:
+  - name: user_id
+  - name: created
+    direction: desc
+
+- kind: PostByUser
+  properties:
+  - name: user_id
+  - name: created
+    direction: desc
