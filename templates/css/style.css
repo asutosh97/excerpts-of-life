@@ -17,6 +17,7 @@
 @import url('https://fonts.googleapis.com/css?family=Architects+Daughter');
 @import url('https://fonts.googleapis.com/css?family=Kaushan+Script');
 @import url('https://fonts.googleapis.com/css?family=Sacramento');
+@import url('https://fonts.googleapis.com/css?family=Rancho');
 h2 {
     font-size: 24px;
     font-weight: bold;
@@ -100,6 +101,8 @@ input[type=submit] {
 
 .post-content {
     margin-top: 5px;
+    font-family: 'Rancho', cursive;
+    font-size: 25px;
 }
 
 .index-table{
