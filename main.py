@@ -264,20 +264,45 @@ class NewPost(BaseHandler):
 			error = "Enter both subject and content!!!"
 			self.render('newpost.html',error = error)
 
+
+class Comment(db.Model):
+	user_id = db.StringProperty(required = True)
+	post_id = db.StringProperty(required = True)
+	content = db.TextProperty(required = True)
+	created = db.DateTimeProperty(auto_now_add = True)
+
+	def render(self):
+		self._render_text = self.content.replace('\n','<br>')
+		self.username = User.by_id(int(self.user_id)).name
+		return render_str('comment.html',comment = self)
+
 class PostPage(BaseHandler):
 	def get(self,post_id):
 		if self.user:
 			key = db.Key.from_path('Post',int(post_id))
-			post = db.get(key)
+			self.post = db.get(key)
 
-			if not post:
+			if not self.post:
 				self.error(404)
 				return
 
-			self.render('permalink.html',post = post)
+		#	comments = db.GqlQuery("select * from Comment order by created desc")
+			self.render('permalink.html',post = self.post)
 		
 		else:
 			self.redirect('/')
+
+	def post(self):
+		user_id = str(self.user.key().id())
+		post_id = str(self.post.key().id())
+		content =  self.request.get('content')
+
+		if content:
+			c = Comment(user_id = user_id,post_id = post_id,content = content)
+			c.put()
+			self.redirect('/blog/%s' % str(self.post.key().id()))
+		else:
+			self.redirect('/blog/%s' % str(self.post.key().id()))
 
 class Feedback(db.Model):
 	user_id = db.StringProperty(required = True)
