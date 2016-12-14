@@ -21,6 +21,7 @@
 @import url('https://fonts.googleapis.com/css?family=Great+Vibes');
 @import url('https://fonts.googleapis.com/css?family=Allura');
 @import url('https://fonts.googleapis.com/css?family=Fredericka+the+Great');
+@import url('https://fonts.googleapis.com/css?family=Amatic+SC');
 h2 {
     font-size: 24px;
     font-weight: bold;
@@ -86,6 +87,13 @@ input[type=submit] {
     text-align: center;
     margin-bottom: 30px;
     text-decoration: none;
+}
+
+#logout-msg{
+    margin: auto;
+    font-size: 50px;
+    text-align: center;
+    font-family: 'Amatic SC', cursive;
 }
 
 #post + #post {

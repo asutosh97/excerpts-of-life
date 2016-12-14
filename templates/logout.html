@@ -9,5 +9,12 @@ LOGOUT
 {% endblock %}
 
 {% block content %}
-<div>Thank you for using our services</div>
+{% for x in range(0,7) %}
+		<br>
+	{% endfor %}
+<div class="row">
+	<div class="col-6" id="logout-msg">
+		Thank you, do visit us again :)
+	</div>
+</div>
 {% endblock %}
