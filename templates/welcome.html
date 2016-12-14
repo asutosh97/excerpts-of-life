@@ -2,6 +2,31 @@
 
 
 {% block content %}
-Welcome {{username}}
+{% for x in range(0,7) %}
+		<br>
+	{% endfor %}
+
+
+<div class="row">
+	<div class="col-4" id="intro">
+		Intro
+	</div>
+</div>	
+
+<div class="row">
+	<div class="col-4" id="intro-content">
+		"This blog , as the name speaks, is a platform to share sweet and little instances of our life with others."
+	</div>
+</div>	
+
+{% for x in range(0,3) %}
+		<br>
+	{% endfor %}
+
+<div class="row">
+	<div class="col-12" id="proceed">
+		<a href="/blog" style="text-decoration: none;">Proceed to the blog</a>
+	</div>
+</div>
 {% endblock %}
 

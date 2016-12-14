@@ -18,6 +18,9 @@
 @import url('https://fonts.googleapis.com/css?family=Kaushan+Script');
 @import url('https://fonts.googleapis.com/css?family=Sacramento');
 @import url('https://fonts.googleapis.com/css?family=Rancho');
+@import url('https://fonts.googleapis.com/css?family=Great+Vibes');
+@import url('https://fonts.googleapis.com/css?family=Allura');
+@import url('https://fonts.googleapis.com/css?family=Fredericka+the+Great');
 h2 {
     font-size: 24px;
     font-weight: bold;
@@ -35,6 +38,25 @@ label {
 
 label + label {
     margin-top: 20px;
+}
+
+#intro{
+    margin:auto;
+    text-align:center;
+    font-family: 'Great Vibes', cursive;
+    font-size: 50px;
+}
+#intro-content{
+    margin:auto;
+    text-align:center;
+    font-family: 'Allura', cursive;
+    font-size: 26px;
+}
+
+#proceed{
+    text-align: right;
+    font-family: 'Fredericka the Great', cursive;
+    font-size: 30px;
 }
 
 input[type=text] {
