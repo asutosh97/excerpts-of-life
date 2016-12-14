@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3 style="font-family: 'Molle', cursive;">Posts by {{username}} </h3>
+<h3 style="font-family: 'Molle', cursive;">Posts on {{username}} </h3>
 	{% for element in elements %}
 		{{element.render() | safe}}
 	{% endfor %}

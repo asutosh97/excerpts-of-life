@@ -2,12 +2,14 @@
 	<hr>
 	<div class="row">
 			<div class="col-3">
-				<div>{{comment.username}}</div>
-				<div>{{comment.created.strftime("%b %d, %Y")}}</div>
+				<a href="/user/{{comment.user_id}}" style="text-decoration: none;">
+					<div style="font-family: 'Sacramento', cursive;font-size: 2em;color: #999;">{{comment.username}}</div>
+				</a>
+					<div style="color: #999;font-family: 'Kaushan Script', cursive;">{{comment.created.strftime("%b %d, %Y")}}</div>
 			</div>
 
 			<div class="col-9">
-				{{comment._render_text | safe}}
+				<div style="font-family: 'Mirza', cursive;">{{comment._render_text | safe}}</div>
 			</div>
 	</div>
 </div>
