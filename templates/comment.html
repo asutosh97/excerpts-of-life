@@ -1,0 +1,13 @@
+<div class="inner-grid" id="post">
+	<hr>
+	<div class="row">
+			<div class="col-3">
+				<div>{{comment.username}}</div>
+				<div>{{comment.created.strftime("%b %d, %Y")}}</div>
+			</div>
+
+			<div class="col-9">
+				{{comment._render_text | safe}}
+			</div>
+	</div>
+</div>

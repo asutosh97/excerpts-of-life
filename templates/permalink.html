@@ -7,8 +7,8 @@
 		<br>
 	{% endfor %}
 <hr>
-<div class="inside-grid">
-	<form method="post">
+<form method="post">
+	<div class="inside-grid">
 		<div class="row">
 			<div class="col-12">
 				<h3>Comments</h3>
@@ -17,12 +17,17 @@
 
 		<div class="row">
 			<div class="col-8">
-				<textarea placeholder="comments" name="content" class="comment-box">{{content}}</textarea>
+				<textarea placeholder="comments" name="content" class="comment-box"></textarea>
 			</div>
 			<div class="col-4">
 				<button class="comment-submit">Submit</button>
 			</div>
 		</div>
-	</form>
-</div>
+	</div>
+</form>
+
+{% for comment in comments %}
+	{{comment.render() | safe}}
+{% endfor %}
+
 {% endblock %}

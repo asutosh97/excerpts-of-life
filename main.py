@@ -280,29 +280,28 @@ class PostPage(BaseHandler):
 	def get(self,post_id):
 		if self.user:
 			key = db.Key.from_path('Post',int(post_id))
-			self.post = db.get(key)
+			post = db.get(key)
 
-			if not self.post:
+			if not post:
 				self.error(404)
 				return
 
-		#	comments = db.GqlQuery("select * from Comment order by created desc")
-			self.render('permalink.html',post = self.post)
+			comments = db.GqlQuery("select * from Comment WHERE post_id='%s' order by created desc" % post_id)
+			self.render('permalink.html', post = post, comments = comments)
 		
 		else:
 			self.redirect('/')
 
-	def post(self):
+	def post(self,post_id):
 		user_id = str(self.user.key().id())
-		post_id = str(self.post.key().id())
 		content =  self.request.get('content')
 
 		if content:
 			c = Comment(user_id = user_id,post_id = post_id,content = content)
 			c.put()
-			self.redirect('/blog/%s' % str(self.post.key().id()))
+			self.redirect('/blog/%s' % post_id)
 		else:
-			self.redirect('/blog/%s' % str(self.post.key().id()))
+			self.redirect('/blog/%s' % post_id)
 
 class Feedback(db.Model):
 	user_id = db.StringProperty(required = True)
