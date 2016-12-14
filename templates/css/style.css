@@ -1,4 +1,4 @@
-body {
+/*body {
     font-family: Helvetica, Arial, sans-serif;
     font-size: 14px;
 
@@ -6,7 +6,11 @@ body {
     margin: 0 auto;
     padding: 10px;
     color: #333;
-}
+}*/
+/*    *{
+        border-style: dashed;
+        box-sizing: border-box;
+    }   */
 
 h2 {
     font-size: 24px;
@@ -55,24 +59,28 @@ input[type=submit] {
     text-decoration: none;
 }
 
-.post + .post {
-    margin-top: 15px;
+#post + #post {
+    margin-top: 20px;
 }
 
-.post-heading {
-    position: relative;
+.heading-line {
     border-bottom: 3px solid #666;
 }
 
 .post-subject {
-    font-size: 24px;
+    font-size: 16px;
     font-weight: bold;
     text-decoration: none;
     color: #222;
 }
 
-.post-date {
-    position: absolute;
+.by-line{
+    text-align: right;
+    color: #999;
+    font-style: italic;
+}
+.post-date{
+    text-align: right;
     right: 0px;
     bottom: 0px;
     color: #999;
@@ -97,4 +105,70 @@ input[type=submit] {
 .index-links{
 	text-decoration: none;
 	color: #999;
+}
+
+.comment-box{
+  width: 100%;
+  height: 100px;
+}
+
+.comment-submit{
+    width: 100px;
+    height: 30px;
+    margin-left: 20px;
+}
+
+.grid{
+    width: 80%;
+    margin: auto;
+    margin-top: 50px;
+}
+
+.inner-grid{
+    width: 100%;
+}
+
+.row{
+    width:100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+.col-1{
+    width: 8.33%;
+}
+.col-2{
+    width: 16.66%;
+}
+.col-3{
+    width: 25%;
+}
+.col-4{
+    width: 33.33%;
+
+    max-height: 100px;
+    overflow: auto;
+}
+.col-5{
+    width: 41.66%;
+}
+.col-6{
+    width: 50%;
+}
+.col-7{
+    width: 58.33%;
+}
+.col-8{
+    width: 66.66%;
+}
+.col-9{
+    width: 75%;
+}
+.col-10{
+    width: 83.33%;
+}
+.col-11{
+    width: 91.66%;
+}
+.col-12{
+    width: 100%;
 }

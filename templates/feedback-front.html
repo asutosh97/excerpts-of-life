@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+	{% for feedback in feedbacks %}
+		{{feedback.render() | safe}}
+	{% endfor %}
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+	{{post.render() | safe}}
+
+	{% for x in range(0,10) %}
+		<br>
+	{% endfor %}
+<hr>
+<div class="inside-grid">
+	<form method="post">
+		<div class="row">
+			<div class="col-12">
+				<h3>Comments</h3>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-8">
+				<textarea placeholder="comments" name="content" class="comment-box">{{content}}</textarea>
+			</div>
+			<div class="col-4">
+				<button class="comment-submit">Submit</button>
+			</div>
+		</div>
+	</form>
+</div>
+{% endblock %}

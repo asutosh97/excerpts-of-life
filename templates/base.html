@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>
-	{% block tabname %}
-	{% endblock %}
-	</title>
+	<title>Excerpts of Life</title>
 	<link rel="stylesheet" type="text/css" href="/css/style.css">
 </head>
 <body>
-	<h1 class='main-title'>
-	{% block heading %}
-	{% endblock %}
-	</h1>
-
-	{% block content %}
-	{% endblock %}
+	<div class="grid">
+		<div class="row">
+			<div class="col-4" style="margin: auto">
+				<a href="/blog" class="main-title">Excerpts of Life</a>
+			</div>
+		</div>
+		{% block content %}
+		{% endblock %}
+	</div>
 </body>
 </html>

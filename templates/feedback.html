@@ -1,0 +1,19 @@
+<div class="inner-grid" id="post">
+	<div class="row">
+			<div class="col-6">
+				<div class="post-subject">
+					{{feedback.username}}
+				</div>
+			</div>
+	</div>
+
+	<div class="heading-line"></div>
+
+	<div class="row">
+		<div class="col-12">
+			<div class="post-content">
+				{{feedback._render_text | safe}}
+			</div>
+		</div>
+	</div>
+</div>

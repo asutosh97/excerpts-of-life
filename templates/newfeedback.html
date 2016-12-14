@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="post">
+	<h2>feedback and suggestions</h2>
+	<label>
+		Feedback
+		<br>
+		<textarea placeholder="Enter your feedback here" name="content">{{content}}</textarea>
+	</label>
+	<div class="error">
+		{{error}}
+	</div>
+	<button>Submit and Logout</button>
+</form>
+{% endblock %}

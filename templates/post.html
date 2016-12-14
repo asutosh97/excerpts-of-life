@@ -1,0 +1,30 @@
+<div class="inner-grid" id="post">
+	<div class="row">
+			<div class="col-6">
+				<a href="/blog/{{post.key().id()}}" class="post-subject">
+					{{post.subject}}
+				</a>
+			</div>
+
+			<div class="col-6">
+				<div class="post-date">
+					{{post.created.strftime("%b %d, %Y")}}
+				</div>
+			</div>
+	</div>
+	<div class="heading-line"></div>
+	<div class="row">
+		<div class="col-12">
+			<div class="by-line">
+				By : {{post.username}}
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12">
+			<div class="post-content">
+				{{post._render_text | safe}}
+			</div>
+		</div>
+	</div>
+</div>
