@@ -57,6 +57,18 @@ def check_secure_val(secure_val):
 	if secure_val == make_secure_val(val):
 		return val
 
+class Post(db.Model):
+	subject = db.StringProperty(required = True)
+	content = db.TextProperty(required = True)
+	created = db.DateTimeProperty(auto_now_add = True)
+	user_id = db.StringProperty(required = True)
+
+	def render(self):
+		self._render_text = self.content.replace('\n','<br>')
+		self.username = User.by_id(int(self.user_id)).name
+		return render_str('post.html',post = self)
+
+
 class User(db.Model):
 	name = db.StringProperty(required = True)
 	pw_secure_val = db.StringProperty(required = True)
@@ -115,11 +127,16 @@ class BaseHandler(webapp2.RequestHandler):
 	def initialize(self, *args, **kwargs):
 		webapp2.RequestHandler.initialize(self, *args, **kwargs)
 		uid = self.read_secure_cookie('user_id')
-		self.user = uid and User.by_id(int(uid))
+		self.user = None
+		if uid and User.by_id(int(uid)):
+			self.user = User.by_id(int(uid))
 
 class MainHandler(BaseHandler):
     def get(self):
-        self.render('index.html')
+    	if self.user:
+    		self.redirect('/blog')
+    	else:
+        	self.render('index.html')
 
 class Signup(BaseHandler):
 	def get(self):
@@ -195,7 +212,7 @@ class LoginHandler(BaseHandler):
 
 		if u:
 			self.login(u)
-			self.redirect('/welcome')
+			self.redirect('/blog')
 		else:
 			msg = 'invalid login'
 			self.render('login-form.html',error = msg)
@@ -214,13 +231,103 @@ class WelcomeHandler(BaseHandler):
 			self.render('welcome.html',username = self.user.name)
 
 		else:
-			self.redirect('/login')
+			self.redirect('/')
 
+
+class BlogHandler(BaseHandler):
+	def get(self):
+		if self.user:
+			posts = db.GqlQuery("select * from Post order by created desc")
+			self.render('front.html',posts = posts)
+
+		else:
+			self.redirect('/')
+
+class NewPost(BaseHandler):
+	def get(self):
+		if self.user:
+			self.render('newpost.html')
+
+		else:
+			self.redirect('/')
+
+	def post(self):
+		subject = self.request.get('subject')
+		content =  self.request.get('content')
+		user_id = str(self.user.key().id())
+
+		if subject and content:
+			p = Post(subject = subject,content = content,user_id = user_id)
+			p.put()
+			self.redirect('/blog/%s' % str(p.key().id()))
+		else:
+			error = "Enter both subject and content!!!"
+			self.render('newpost.html',error = error)
+
+class PostPage(BaseHandler):
+	def get(self,post_id):
+		if self.user:
+			key = db.Key.from_path('Post',int(post_id))
+			post = db.get(key)
+
+			if not post:
+				self.error(404)
+				return
+
+			self.render('permalink.html',post = post)
+		
+		else:
+			self.redirect('/')
+
+class Feedback(db.Model):
+	user_id = db.StringProperty(required = True)
+	content = db.TextProperty(required = True)
+	created = db.DateTimeProperty(auto_now_add = True)
+
+	def render(self):
+		self._render_text = self.content.replace('\n','<br>')
+		self.username = User.by_id(int(self.user_id)).name
+		return render_str('feedback.html',feedback = self)
+
+
+class FeedbackPost(BaseHandler):
+	def get(self):
+		if self.user:
+			self.render('newfeedback.html')
+
+		else:
+			self.redirect('/')
+
+	def post(self):
+		content =  self.request.get('content')
+		user_id = str(self.user.key().id())
+
+		if content:
+			f = Feedback(user_id = user_id,content = content)
+			f.put()
+			self.redirect('/exit')
+		else:
+			error = "Enter some content!!!"
+			self.render('newfeedback.html',error = error)
+
+class SeeFeedbackHandler(BaseHandler):
+	def get(self):
+		if self.user.name == 'asutosh':
+			feedbacks = db.GqlQuery("select * from Feedback order by created desc")
+			self.render('feedback-front.html',feedbacks = feedbacks)
+
+		else:
+			self.redirect('/')
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
-    ('/login',LoginHandler),
-    ('/welcome',WelcomeHandler),
-    ('/logout',LogoutHandler),
-    ('/signup',RegisterHandler)
+    ('/login', LoginHandler),
+    ('/blog', BlogHandler),
+    ('/logout', FeedbackPost),
+    ('/feedbacks',SeeFeedbackHandler),
+    ('/exit',LogoutHandler),
+    ('/signup', RegisterHandler),
+    ('/blog/newpost', NewPost),
+    ('/blog/([0-9]+)',PostPage),
+    ('/welcome',WelcomeHandler)
 ], debug=True)
