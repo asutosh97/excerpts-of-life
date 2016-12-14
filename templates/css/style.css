@@ -12,6 +12,11 @@
         box-sizing: border-box;
     }   */
 
+@import url('https://fonts.googleapis.com/css?family=Gloria+Hallelujah');
+@import url('https://fonts.googleapis.com/css?family=Dancing+Script');
+@import url('https://fonts.googleapis.com/css?family=Architects+Daughter');
+@import url('https://fonts.googleapis.com/css?family=Kaushan+Script');
+@import url('https://fonts.googleapis.com/css?family=Sacramento');
 h2 {
     font-size: 24px;
     font-weight: bold;
@@ -53,6 +58,7 @@ input[type=submit] {
     display: block;
     color: #222;
     font-size: 40px;
+    font-family: 'Gloria Hallelujah', cursive;
     font-weight: bold;
     text-align: center;
     margin-bottom: 30px;
@@ -68,7 +74,8 @@ input[type=submit] {
 }
 
 .post-subject {
-    font-size: 16px;
+    font-family: 'Dancing Script', cursive;
+    font-size: 23px;
     font-weight: bold;
     text-decoration: none;
     color: #222;
@@ -79,12 +86,15 @@ input[type=submit] {
     color: #999;
     font-style: italic;
     text-decoration: none;
+    font-size: 20px;
+    font-family: 'Sacramento', cursive;
 }
 .post-date{
     text-align: right;
     right: 0px;
     bottom: 0px;
     color: #999;
+    font-family: 'Kaushan Script', cursive;
 
 }
 

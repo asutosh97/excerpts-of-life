@@ -57,6 +57,10 @@ def check_secure_val(secure_val):
 	if secure_val == make_secure_val(val):
 		return val
 
+def render_str(template, **params):
+	t = jinja_env.get_template(template)
+	return t.render(params)
+
 class Post(db.Model):
 	subject = db.StringProperty(required = True)
 	content = db.TextProperty(required = True)
@@ -99,9 +103,37 @@ class User(db.Model):
 		if u and check_pw_secure_val(name,pw,u.pw_secure_val):
 			return u
 
-def render_str(template, **params):
-	t = jinja_env.get_template(template)
-	return t.render(params)
+class Feedback(db.Model):
+	user_id = db.StringProperty(required = True)
+	content = db.TextProperty(required = True)
+	created = db.DateTimeProperty(auto_now_add = True)
+
+	def render(self):
+		self._render_text = self.content.replace('\n','<br>')
+		self.username = User.by_id(int(self.user_id)).name
+		return render_str('feedback.html',feedback = self)
+
+
+class PostByUser(db.Model):
+	user_id = db.StringProperty(required = True)
+	post_id = db.TextProperty(required = True)
+	created = db.DateTimeProperty(auto_now_add = True)
+
+	def render(self):
+		post = Post.by_id(int(self.post_id))
+		return post.render()
+
+class Comment(db.Model):
+	user_id = db.StringProperty(required = True)
+	post_id = db.StringProperty(required = True)
+	content = db.TextProperty(required = True)
+	created = db.DateTimeProperty(auto_now_add = True)
+
+	def render(self):
+		self._render_text = self.content.replace('\n','<br>')
+		self.username = User.by_id(int(self.user_id)).name
+		return render_str('comment.html',comment = self)
+
 
 class BaseHandler(webapp2.RequestHandler):
 	def write(self, *args, **kwargs):
@@ -248,15 +280,6 @@ class BlogHandler(BaseHandler):
 			self.redirect('/')
 
 
-class PostByUser(db.Model):
-	user_id = db.StringProperty(required = True)
-	post_id = db.TextProperty(required = True)
-	created = db.DateTimeProperty(auto_now_add = True)
-
-	def render(self):
-		post = Post.by_id(int(self.post_id))
-		return post.render()
-
 class NewPost(BaseHandler):
 	def get(self):
 		if self.user:
@@ -291,16 +314,6 @@ class UserPage(BaseHandler):
 		else:
 			self.redirect('/')
 
-class Comment(db.Model):
-	user_id = db.StringProperty(required = True)
-	post_id = db.StringProperty(required = True)
-	content = db.TextProperty(required = True)
-	created = db.DateTimeProperty(auto_now_add = True)
-
-	def render(self):
-		self._render_text = self.content.replace('\n','<br>')
-		self.username = User.by_id(int(self.user_id)).name
-		return render_str('comment.html',comment = self)
 
 class PostPage(BaseHandler):
 	def get(self,post_id):
@@ -328,17 +341,6 @@ class PostPage(BaseHandler):
 			self.redirect('/blog/%s' % post_id)
 		else:
 			self.redirect('/blog/%s' % post_id)
-
-class Feedback(db.Model):
-	user_id = db.StringProperty(required = True)
-	content = db.TextProperty(required = True)
-	created = db.DateTimeProperty(auto_now_add = True)
-
-	def render(self):
-		self._render_text = self.content.replace('\n','<br>')
-		self.username = User.by_id(int(self.user_id)).name
-		return render_str('feedback.html',feedback = self)
-
 
 class FeedbackPost(BaseHandler):
 	def get(self):

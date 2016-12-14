@@ -9,31 +9,34 @@ Excerpts of Life
 {% endblock %}
 
 {% block content %}
-<div class="container">
-	<table class="index-table">
-		<tr>
-			<td class="index-column">
-				<a href="/signup" class="index-links">
-					<div style="height:100%;width:100%">
-						Register
-						<br>
-						(New User)
-					</div>
-				</a>
-			</td>
-			<td style="width:100px">
-				
-			</td>
-			<td class="index-column">
-				<a href="/login" class="index-links">
-					<div style="height:100%;width:100%">
-						Login
-						<br>
-						(Existing User)
-					</div>
-				</a>
-			</td>
-		</tr>
-	</table>
+{% for x in range(0,8) %}
+		<br>
+	{% endfor %}
+
+<div class="row">
+	<div class="col-3" style="margin: auto;">
+		<form action="/signup">
+			<button style="width: 100%;height: 50px;text-align: center;">
+				Sign Up
+				<br>
+				(New User)
+			</button>
+		</form>
+	</div>	
+</div>
+{% for x in range(0,3) %}
+		<br>
+	{% endfor %}
+
+<div class="row">
+	<div class="col-3" style="margin: auto;">
+		<form action="/login">
+			<button style="width: 100%;height: 50px;text-align: center;">
+				Log In
+				<br>
+				(Existing User)
+			</button>
+		</form>
+	</div>	
 </div>
 {% endblock %}
