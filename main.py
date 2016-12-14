@@ -364,7 +364,7 @@ class FeedbackPost(BaseHandler):
 
 class SeeFeedbackHandler(BaseHandler):
 	def get(self):
-		if self.user.name == 'asutosh':
+		if self.user and self.user.name == 'asutosh':
 			feedbacks = db.GqlQuery("select * from Feedback order by created desc")
 			self.render('feedback-front.html',feedbacks = feedbacks)
 
