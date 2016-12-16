@@ -8,18 +8,18 @@
 
 			<div class="col-6">
 				<div class="post-date">
-					{{post.created.strftime("%b %d, %Y")}}
+						{{post.created.strftime("%b %d, %Y")}}
 				</div>
 			</div>
 	</div>
 	<div class="heading-line"></div>
 	<div class="row">
-		<div class="col-12">
-			<a href="/user/{{post.user_id}}" style="text-decoration: none;">
-				<div class="by-line">
+		<div class="col-2" style="margin-left:auto; margin-right:0;">
+			<div class="by-line">
+				<a href="/user/{{post.user_id}}" style="text-decoration: none;">
 					By : {{post.username}}
-				</div>
-			</a>
+				</a>
+			</div>
 		</div>
 	</div>
 	<div class="row">

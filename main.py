@@ -371,6 +371,10 @@ class SeeFeedbackHandler(BaseHandler):
 		else:
 			self.redirect('/')
 
+class DateTimeHandler(BaseHandler):
+	def get(self):
+		self.write("Congrats, it works")
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/login', LoginHandler),
@@ -382,5 +386,6 @@ app = webapp2.WSGIApplication([
     ('/blog/newpost', NewPost),
     ('/blog/([0-9]+)', PostPage),
     ('/user/([0-9]+)', UserPage),
+    ('/date/([a-zA-Z0-9_ :.]+)',DateTimeHandler),
     ('/welcome',WelcomeHandler)
 ], debug=True)
