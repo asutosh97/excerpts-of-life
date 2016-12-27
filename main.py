@@ -21,6 +21,8 @@ import hashlib
 import hmac
 import random
 import string
+import urllib2
+import json
 from valid_credentials import valid_username, valid_password, valid_email
 from google.appengine.ext import db
 
@@ -57,6 +59,27 @@ def check_secure_val(secure_val):
 	if secure_val == make_secure_val(val):
 		return val
 
+IP_URL = "http://api.ipinfodb.com/v3/ip-city/?key=8b02066bc60c1f1cf9857134f72c8c1ea5a5a6bd73760151e673bafae9b488ef&ip=%s&format=json"
+def get_coords(ip):
+	url = IP_URL % (ip)
+	content = None
+	try:
+		content = urllib2.urlopen(url).read()
+	except URLError:
+		return
+
+	if content:
+		j = json.loads(content)
+		lon = j['longitude']
+		lat = j['latitude']
+		return db.GeoPt(lat, lon)
+
+GMAPS_URL = 'http://maps.googleapis.com/maps/api/staticmap?size=600x300&sensor=false&'
+def gmaps_img(points):
+	markers = '&'.join('markers=%s,%s' % (p.lat, p.lon)
+						for p in points)
+	return GMAPS_URL + markers
+
 def render_str(template, **params):
 	t = jinja_env.get_template(template)
 	return t.render(params)
@@ -66,6 +89,7 @@ class Post(db.Model):
 	content = db.TextProperty(required = True)
 	created = db.DateTimeProperty(auto_now_add = True)
 	user_id = db.StringProperty(required = True)
+	coords = db.GeoPtProperty()
 
 	def render(self):
 		self._render_text = self.content.replace('\n','<br>')
@@ -274,7 +298,17 @@ class BlogHandler(BaseHandler):
 	def get(self):
 		if self.user:
 			posts = db.GqlQuery("select * from Post order by created desc")
-			self.render('front.html',posts = posts)
+			posts = list(posts)
+
+			points = []
+			for p in posts:
+				if p.coords:
+					points.append(p.coords)
+
+			img_url = None
+			if points:
+				img_url = gmaps_img(points)
+			self.render('front.html',posts = posts, img_url = img_url)
 
 		else:
 			self.redirect('/')
@@ -295,6 +329,12 @@ class NewPost(BaseHandler):
 
 		if subject and content:
 			p = Post(subject = subject,content = content,user_id = user_id)
+
+			# look up user's co-ordinates from ip
+			# if we have co-ordinates, add them to the Art
+			coords = get_coords(self.request.remote_addr)
+			if coords:
+				p.coords = coords
 			p.put()
 			post_id = str(p.key().id())
 			element = PostByUser(user_id = user_id,post_id = post_id)
@@ -371,10 +411,6 @@ class SeeFeedbackHandler(BaseHandler):
 		else:
 			self.redirect('/')
 
-class DateTimeHandler(BaseHandler):
-	def get(self):
-		self.write("Congrats, it works")
-
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/login', LoginHandler),
@@ -386,6 +422,5 @@ app = webapp2.WSGIApplication([
     ('/blog/newpost', NewPost),
     ('/blog/([0-9]+)', PostPage),
     ('/user/([0-9]+)', UserPage),
-    ('/date/([a-zA-Z0-9_ :.]+)',DateTimeHandler),
     ('/welcome',WelcomeHandler)
 ], debug=True)

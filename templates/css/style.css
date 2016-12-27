@@ -83,6 +83,12 @@ input[type=submit] {
 #heading{
     margin-bottom: 60px;
 }
+
+.map{
+    display: block;
+    margin: 0 auto;
+}
+
 .main-title {
     display: block;
     color: #222;

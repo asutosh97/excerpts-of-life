@@ -19,4 +19,11 @@
 	{% for post in posts %}
 		{{post.render() | safe}}
 	{% endfor %}
+	<hr>
+	{% for x in range(0,10) %}
+		<br>
+	{% endfor %}
+	{% if img_url %}
+		<img class="map" src="{{img_url}}">
+	{% endif %}
 {% endblock %}
