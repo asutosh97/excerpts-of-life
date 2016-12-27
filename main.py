@@ -23,6 +23,8 @@ import random
 import string
 import urllib2
 import json
+import logging
+from google.appengine.api import memcache
 from valid_credentials import valid_username, valid_password, valid_email
 from google.appengine.ext import db
 
@@ -294,12 +296,20 @@ class WelcomeHandler(BaseHandler):
 			self.redirect('/')
 
 
+def top_posts(update = False):
+	key = 'top'
+	posts = memcache.get(key)
+	if posts is None or update:
+		logging.error('DB QUERY')
+		posts = db.GqlQuery("select * from Post order by created desc")
+		posts = list(posts)
+		memcache.set(key, posts)
+	return posts
+
 class BlogHandler(BaseHandler):
 	def get(self):
 		if self.user:
-			posts = db.GqlQuery("select * from Post order by created desc")
-			posts = list(posts)
-
+			posts = top_posts()
 			points = []
 			for p in posts:
 				if p.coords:
@@ -339,6 +349,7 @@ class NewPost(BaseHandler):
 			post_id = str(p.key().id())
 			element = PostByUser(user_id = user_id,post_id = post_id)
 			element.put()
+			top_posts(True)
 			self.redirect('/blog/%s' % post_id)
 		else:
 			error = "Enter both subject and content!!!"
