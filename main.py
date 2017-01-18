@@ -139,16 +139,6 @@ class Feedback(db.Model):
 		self.username = User.by_id(int(self.user_id)).name
 		return render_str('feedback.html',feedback = self)
 
-
-class PostByUser(db.Model):
-	user_id = db.StringProperty(required = True)
-	post_id = db.TextProperty(required = True)
-	created = db.DateTimeProperty(auto_now_add = True)
-
-	def render(self):
-		post = Post.by_id(int(self.post_id))
-		return post.render()
-
 class Comment(db.Model):
 	user_id = db.StringProperty(required = True)
 	post_id = db.StringProperty(required = True)
@@ -347,8 +337,6 @@ class NewPost(BaseHandler):
 				p.coords = coords
 			p.put()
 			post_id = str(p.key().id())
-			element = PostByUser(user_id = user_id,post_id = post_id)
-			element.put()
 			top_posts(True)
 			self.redirect('/blog/%s' % post_id)
 		else:
@@ -358,13 +346,10 @@ class NewPost(BaseHandler):
 class UserPage(BaseHandler):
 	def get(self,user_id):
 		if self.user:
-			elements = db.GqlQuery("select * from PostByUser WHERE user_id='%s' order by created desc" % user_id)
-
-			self.render('postbyuser.html',elements = elements, username = User.by_id(int(user_id)).name)
-
+			posts = db.GqlQuery("select * from Post WHERE user_id='%s' order by created desc" % user_id)
+			self.render('postbyuser.html',elements = posts, username = User.by_id(int(user_id)).name)
 		else:
 			self.redirect('/')
-
 
 class PostPage(BaseHandler):
 	def get(self,post_id):
@@ -376,7 +361,7 @@ class PostPage(BaseHandler):
 				self.error(404)
 				return
 
-			comments = db.GqlQuery("select * from Comment WHERE post_id='%s' order by created desc" % post_id)
+			comments = db.GqlQuery("select * from Comment WHERE post_id='%s'" % post_id)
 			self.render('permalink.html', post = post, comments = comments)
 		
 		else:
